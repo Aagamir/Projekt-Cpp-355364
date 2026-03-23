@@ -1,8 +1,8 @@
 //klasa do obsługi wektorów w przestrzeni 3d i kolorów RGB
 //wiedza zdobyta z wpisu na https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
-#ifndef VEC3_H
-#define VEC3_H
+#ifndef VEC3_H //include guards - czy juz zaincludowano VEC3_H
+#define VEC3_H //jesli nie to zaincluduj
 
 #include <cmath>
 #include <iostream>
@@ -92,8 +92,8 @@ inline vec3 operator*(const vec3 &v, double t) {
     return t * v;
 }
 
-inline vec3 operator/(const vec3 &v, double t) {
-    return (1/t) * v; //kolejnosc jest wazna, najpierw dzielenie, potem wektor jednostkowy
+inline vec3 operator/(const vec3 &v, double t) {//kolejnosc jest wazna, najpierw dzielenie, potem wektor jednostkowy
+    return (1/t) * v;
 }
 //Iloczyn skalarny
 inline double dot(const vec3 &u, const vec3 &v) {
