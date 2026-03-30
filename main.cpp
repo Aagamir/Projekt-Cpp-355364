@@ -10,8 +10,8 @@ int main() {
     // 2. Wrzucamy do niego obiekty używając inteligentnych wskaźników
     // make_shared rezerwuje miejsce w pamięci komputera i automatycznie je sprząta po zakończeniu
     //space.add(make_shared<sphere>(point3(4,0,-3), 0.5));
-    space.add(make_shared<sphere>(point3(0.5,0.5,-3), 0.3));
-    space.add(make_shared<sphere>(point3(-0.7,0.7,-30), 1));
+    //space.add(make_shared<sphere>(point3(0.5,0.7,-3), 0.3));
+    space.add(make_shared<sphere>(point3(-0.9,2.2,-30), 2));
 
     // 3. Ustawiamy i odpalamy kamerę, przekazując jej nasz uklad
     camera cam;
