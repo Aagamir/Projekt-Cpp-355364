@@ -27,6 +27,3 @@ class ray {
 };
 
 #endif
-
-//zobaczyc czy promiene sa rownolegle czy nie
-//wunkcja zwaracajaca pozycje promienia w zakrzywienu

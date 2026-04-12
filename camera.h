@@ -1,12 +1,11 @@
-/*
- * 27.03.2026
+/* * 27.03.2026
  * Zmiana w ray color pod ray marching
- *
- * dodac dokumentcje tlumaczaca dzialanie z newtonem i swarzchildem
- *
- * gdzie definiuje poczatkowy kierunek promieni
- *
- * dane geodeyzjne wyliczac
+ * * dodac dokumentcje tlumaczaca dzialanie z newtonem i swarzchildem
+ * * gdzie definiuje poczatkowy kierunek promieni?
+ * * dane geodeyzjne wyliczac (jak i po co?)
+ * *
+ * * zobaczyc czy promiene sa rownolegle czy nie
+ * * wunkcja zwaracajaca pozycje promienia w zakrzywienu
  */
 
 #ifndef CAMERA_H
@@ -17,139 +16,30 @@
 #include "vec3.h"
 #include "hittable.h"
 #include <iostream>
+#include <cstdlib>
 #include <limits>
 
-class camera {
-public:
-    double aspect_ratio = 16.0 / 9.0;
-    int    image_width  = 400;
-
-    void render(const hittable& world) {
-        initialize();
-
-        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
-        for (int j = image_height - 1; j >= 0; --j) {
-            std::cerr << "\rZostalo linii: " << j << ' ' << std::flush;
-            for (int i = 0; i < image_width; ++i) {
-                auto u = double(i) / (image_width - 1);
-                auto v = double(j) / (image_height - 1);
-                ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
-
-                color pixel_color = ray_color(r, world);
-                write_color(std::cout, pixel_color);
-            }
-        }
-        std::cerr << "\nRenderowanie zakonczone sukcesem!\n";
-    }
-
-private:
-    int    image_height;
-    point3 origin;
-    vec3   horizontal;
-    vec3   vertical;
-    point3 lower_left_corner;
-
-    void initialize() {
-        image_height = static_cast<int>(image_width / aspect_ratio);
-        if (image_height < 1) image_height = 1;
-
-        double viewport_height = 2.0;
-        double viewport_width = aspect_ratio * viewport_height;
-        double focal_length = 7.0;
-
-        origin = point3(0, 0, 0);
-        horizontal = vec3(viewport_width, 0, 0);
-        vertical = vec3(0, viewport_height, 0);
-        lower_left_corner = origin - horizontal/2 - vertical/2 - vec3(0, 0, focal_length);
-    }
-
-
-    //To potem chyba wrzuce do ray.h bo bardziej pasuje nazewnictwo
-    color ray_color(const ray& r, const hittable& world) {
-    // 1. Pobieranie pozycji kamery i kierunku strzału
-    point3 current_pos = r.origin();
-    vec3 current_dir = unit_vector(r.direction());
-
-    // Parametry symulacji (krok całkowania numerycznego)
-    double step_size = 0.05; // dt
-    int max_steps = 1500;    // Zabezpieczenie, żeby pętla nie kręciła się w nieskończoność
-
-    // Wirtualna czarna dziura (w przyszlosci moze przeniose do osoobnej klasy)
-    point3 black_hole_center(0.0, 0.0, -3.0);
-    double event_horizon_radius = 0.3;
-    double mass = 0.1; // Odpowiednik masy
-
-    // 2. RAY MARCHING - Główna pętla symulacji fizycznej
-    for (int i = 0; i < max_steps; ++i) {
-
-        // Obliczamy wektor od naszego fotonu do środka czarnej dziury
-        vec3 to_bh = black_hole_center - current_pos;
-        double distance_squared = to_bh.length_squared();
-
-        // WARUNEK A: Wpadliśmy do środka (Przekroczono Horyzont Zdarzeń)
-        if (distance_squared < event_horizon_radius * event_horizon_radius) {
-            return color(0.0, 0.0, 0.0); // Zwracamy idealną czerń
-        }
-
-        // SPRAWDZAMY OBIEKTY Z PRZESTRZENI
-        // Wypuszczamy krótki promień na dystans naszego kroku
-        ray step_ray(current_pos, current_dir);
-        hit_record rec;
-
-        if (world.hit(step_ray, 0.001, step_size, rec)) {
-            // Skoro usunęliśmy albedo, wracamy do kolorowania wektorów normalnych!
-            return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
-        }
-
-        // 3. INTEGRACJA NUMERYCZNA (Uproszczona metoda Eulera dla prezentacji)
-        // Im bliżej dziury, tym siła jest potężniejsza (prawo odwrotnych kwadratów)
-        double force = mass / distance_squared;
-
-        // Wektor grawitacji "ciągnący" nasz foton
-        vec3 gravity_pull = unit_vector(to_bh) * force;
-
-        // Zaginamy kierunek fotonu i od razu go normalizujemy
-        // (Foton w próżni musi zawsze lecieć z prędkością światła c=1)
-        current_dir = unit_vector(current_dir + gravity_pull * step_size);
-
-        // 4. Robimy fizyczny krok do przodu w nowym, zakrzywionym kierunku
-        current_pos = current_pos + current_dir * step_size;
-
-        // (W przyszłości w tym miejscu dodamy sprawdzanie zderzeń z dyskiem akrecyjnym)
-    }
-
-    // WARUNEK B: Promień uciekł grawitacji i poleciał w kosmos
-    // Wyświetlamy nasze tło
-    return color(0.7,0.7,0.7);
-}
-};
-
-#endif
-
-
-/*
-#ifndef CAMERA_H
-#define CAMERA_H
-
-#include "color.h"
-#include "ray.h"
-#include "vec3.h"
-#include "hittable.h"
-#include <iostream>
-#include <limits>
-#include <cstdlib> // Wymagane do funkcji rand()
-
-// Prosta funkcja zwracająca losowy ułamek od 0.0 do 1.0
 inline double random_double() {
+    // Zwraca losową liczbę rzeczywistą z przedziału [0, 1)
     return rand() / (RAND_MAX + 1.0);
 }
 
 class camera {
 public:
     double aspect_ratio = 16.0 / 9.0;
-    int    image_width  = 400;
-    int    samples_per_pixel = 20; // Ile próbek na każdy piksel (antialiasing)
+    int image_width = 2400;
+    int samples_per_pixel = 100; //jakosc antyaliasingu, multisamplingu
+
+    point3 lookfrom = point3(0, 1.0, 4.0); // Kamera wyżej i dalej
+    point3 lookat = point3(0, 0, -3.0); // Patrzymy w środek czarnej dziury
+    vec3 vup = vec3(0, 1, 0); // "Góra" dla kamery to oś Y (czubek glowy)
+    double focal_length = 2; // Normalna ogniskowa
+
+    // --- ZMIENNE WYCIĄGNIĘTE DLA INTERFEJSU UŻYTKOWNIKA ---
+    point3 black_hole_center = point3(0.0, 0.0, -2.0);
+    double event_horizon_radius = 0.1;
+    double disk_inner_radius = 0.7; // Początek dysku (poza ISCO)
+    double disk_outer_radius = 2.2; // Koniec dysku
 
     void render(const hittable& world) {
         initialize();
@@ -162,17 +52,16 @@ public:
 
                 color pixel_color(0, 0, 0);
 
-                // Wypuszczamy kilka promieni wewnątrz jednego piksela
                 for (int s = 0; s < samples_per_pixel; ++s) {
+                    // Dodajemy losowe przesunięcie (jitter) do współrzędnych i oraz j
                     auto u = (double(i) + random_double()) / (image_width - 1);
                     auto v = (double(j) + random_double()) / (image_height - 1);
 
                     ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
-
                     pixel_color = pixel_color + ray_color(r, world);
                 }
 
-                // Uśredniamy kolor ze wszystkich trafień
+                // Dzielimy sumę kolorów przez liczbę próbek, żeby wyciągnąć średnią
                 auto scale = 1.0 / samples_per_pixel;
                 pixel_color = color(pixel_color.x() * scale,
                                     pixel_color.y() * scale,
@@ -185,10 +74,10 @@ public:
     }
 
 private:
-    int    image_height;
+    int image_height;
     point3 origin;
-    vec3   horizontal;
-    vec3   vertical;
+    vec3 horizontal;
+    vec3 vertical;
     point3 lower_left_corner;
 
     void initialize() {
@@ -197,13 +86,23 @@ private:
 
         double viewport_height = 2.0;
         double viewport_width = aspect_ratio * viewport_height;
-        double focal_length = 1.0;
 
-        origin = point3(0, 0, 0);
-        horizontal = vec3(viewport_width, 0, 0);
-        vertical = vec3(0, viewport_height, 0);
-        lower_left_corner = origin - horizontal/2 - vertical/2 - vec3(0, 0, focal_length);
+        // Matematyka zaawansowanej kamery (Wektory bazowe)
+        origin = lookfrom; // Kamera stoi tam, gdzie lookfrom
+
+        // Obliczamy wektory osi kamery w przestrzeni 3D
+        vec3 w = unit_vector(lookfrom - lookat); // Kierunek przeciwny do patrzenia
+        vec3 u = unit_vector(cross(vup, w)); // Wektor "w prawo" dla kamery
+        vec3 v = cross(w, u); // Wektor "w górę" dla kamery
+
+        // Definiujemy wektory horyzontalny i wertykalny ekranu
+        horizontal = viewport_width * u;
+        vertical = viewport_height * v;
+
+        // Wyliczamy nowy lewy dolny róg, uwzględniając pozycję i obrót
+        lower_left_corner = origin - horizontal/2 - vertical/2 - w*focal_length;
     }
+
 
     color ray_color(const ray& r, const hittable& world) {
         point3 current_pos = r.origin();
@@ -212,17 +111,14 @@ private:
         double step_size = 0.05;
         int max_steps = 1500;
 
-        // Parametry czarnej dziury
-        point3 black_hole_center(0.0, 0.0, -3.0);
-        double event_horizon_radius = 0.3;
-        double mass = 0.1;
-
-        // Parametry dysku akrecyjnego
-        double disk_inner_radius = 0.7;
-        double disk_outer_radius = 2.2;
+        // Wysokość, na której leży dysk (korzysta ze zmiennej w public)
+        double bh_y = black_hole_center.y();
 
         for (int i = 0; i < max_steps; ++i) {
-            // --- 1. SPRAWDZAMY CZARNĄ DZIURĘ ---
+            // Zapamiętujemy poprzednią pozycję przed zrobieniem kroku
+            point3 prev_pos = current_pos;
+
+            // 1. SPRAWDZAMY CZARNĄ DZIURĘ
             vec3 to_bh = black_hole_center - current_pos;
             double distance_squared = to_bh.length_squared();
 
@@ -230,49 +126,53 @@ private:
                 return color(0, 0, 0);
             }
 
-            // --- 2. SPRAWDZAMY OBIEKTY ZE ŚWIATA ---
+            // 2. SPRAWDZAMY OBIEKTY ZE ŚWIATA (np. kule)
             ray step_ray(current_pos, current_dir);
             hit_record rec;
             if (world.hit(step_ray, 0.001, step_size, rec)) {
                 return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
             }
 
-            point3 prev_pos = current_pos;
+            // 3. FIZYKA: RELATYWISTYCZNE ZAGINANIE (METRYKA SCHWARZSCHILDA)
+            vec3 r_vec = -to_bh;
+            double r_dist = sqrt(distance_squared);
+            double r5 = distance_squared * distance_squared * r_dist;
 
-            // --- 3. FIZYKA: ZAGINANIE FOTONU ---
-            double force = mass / distance_squared;
-            vec3 gravity_pull = unit_vector(to_bh) * force;
+            vec3 h_vec = cross(r_vec, current_dir);
+            double h2 = h_vec.length_squared();
 
-            current_dir = unit_vector(current_dir + gravity_pull * step_size);
+            vec3 acceleration = -1.5 * event_horizon_radius * h2 / r5 * r_vec;
+
+            current_dir = unit_vector(current_dir + acceleration * step_size);
             current_pos = current_pos + current_dir * step_size;
 
-            // --- 4. DYSK AKRECYJNY ---
-            double bh_y = black_hole_center.y();
-
+            // DETEKCJA DYSKU AKRECYJNEGO
+            // Sprawdzamy, czy w tym kroku foton "przebił" płaszczyznę dysku (bh_y)
             if ((prev_pos.y() > bh_y && current_pos.y() <= bh_y) ||
                 (prev_pos.y() < bh_y && current_pos.y() >= bh_y)) {
 
-                double fraction = (prev_pos.y() - bh_y) / (prev_pos.y() - current_pos.y());
-                point3 hit_point = prev_pos + fraction * (current_pos - prev_pos);
+                // Wyliczamy punkt przecięcia na płaszczyźnie Y
+                double t = (bh_y - prev_pos.y()) / (current_pos.y() - prev_pos.y());
+                point3 hit_point = prev_pos + t * (current_pos - prev_pos);
 
+                // Sprawdzamy odległość punktu uderzenia od środka czarnej dziury
                 double dx = hit_point.x() - black_hole_center.x();
                 double dz = hit_point.z() - black_hole_center.z();
                 double dist_to_center = sqrt(dx*dx + dz*dz);
 
+                // Czy uderzyliśmy w pierścień dysku?
                 if (dist_to_center >= disk_inner_radius && dist_to_center <= disk_outer_radius) {
-                    double temperature = 1.0 - ((dist_to_center - disk_inner_radius) / (disk_outer_radius - disk_inner_radius));
-                    return color(1.0, 0.4 + 0.6 * temperature, 0.1 + 0.9 * temperature);
+                    // Prosty model temperatury: im bliżej środka, tym jaśniej/cieplej
+                    double temp = 1.0 - ((dist_to_center - disk_inner_radius) / (disk_outer_radius - disk_inner_radius));
+                    return color(1.0, 0.3 + 0.7 * temp, 0.1 + 0.5 * temp); // Ognisty pomarańcz
                 }
             }
 
             if (current_pos.length() > 50.0) break;
         }
 
-        // --- 5. TŁO (NIEBO) ---
-        auto t = 0.5 * (current_dir.y() + 1.0);
-        return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
+        return color(0.0, 0.0, 0.0); // Tło: kosmiczna czerń
     }
 };
 
 #endif
- */
