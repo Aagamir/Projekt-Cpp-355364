@@ -133,19 +133,40 @@ private:
             if (world.hit(step_ray, 0.001, step_size, rec)) {
                 return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
             }
-
+            //#########################################################################################################
             // 3. FIZYKA: RELATYWISTYCZNE ZAGINANIE (METRYKA SCHWARZSCHILDA)
+            /**
+             * Krok całkowania numerycznego dla trajektorii fotonu.
+             * * Oblicza "pozorne przyspieszenie" grawitacyjne działające na bezmasowy foton.
+             * Zamiast rozwiązywać złożone równania różniczkowe tensora metrycznego,
+             * wykorzystano zredukowane wektorowe równanie geodezyjne i metodę Eulera.
+             * * Wzór: a = - (1.5 * Rs * h^2 / r^5) * r_vec
+             */
+
+            // KROK 1: Wektor promienia (Odległość od centrum osobliwości)
+            // Odwracamy wektor 'to_bh', aby uzyskać wektor skierowany 'od' czarnej dziury do fotonu.
             vec3 r_vec = -to_bh;
             double r_dist = sqrt(distance_squared);
+            // Wyliczamy r^5 z góry dla optymalizacji (potrzebne w mianowniku).
             double r5 = distance_squared * distance_squared * r_dist;
 
+            // KROK 2: Moment Pędu (Stopień omijania czarnej dziury)
+            // Jeśli foton leci prosto w środek, iloczyn wektorowy wynosi 0 (światło nie skręci).
+            // Im mocniej foton mija dziurę bokiem, tym 'h' jest większe (silniejsze soczewkowanie).
             vec3 h_vec = cross(r_vec, current_dir);
             double h2 = h_vec.length_squared();
 
+            // KROK 3: Równanie Geodezyjne Einsteina
+            // Zredukowana forma metryki. Wartość jest ujemna, bo grawitacja zawsze "ciągnie" foton.
             vec3 acceleration = -1.5 * event_horizon_radius * h2 / r5 * r_vec;
 
+            // KROK 4: Numeryczne Całkowanie (Ray Marching)
+            // Zaginamy kierunek promienia, ale natychmiast go normalizujemy (unit_vector).
+            // Jest to kluczowe, bo grawitacja zmienia tor lotu, ale nie prędkość światła (c).
             current_dir = unit_vector(current_dir + acceleration * step_size);
+            // Wykonujemy właściwy ruch w przestrzeni po nowej, zakrzywionej trajektorii.
             current_pos = current_pos + current_dir * step_size;
+            // ########################################################################################################
 
             // DETEKCJA DYSKU AKRECYJNEGO
             // Sprawdzamy, czy w tym kroku foton "przebił" płaszczyznę dysku (bh_y)
@@ -165,7 +186,7 @@ private:
                 if (dist_to_center >= disk_inner_radius && dist_to_center <= disk_outer_radius) {
                     // Prosty model temperatury: im bliżej środka, tym jaśniej/cieplej
                     double temp = 1.0 - ((dist_to_center - disk_inner_radius) / (disk_outer_radius - disk_inner_radius));
-                    return color(1.0, 0.3 + 0.7 * temp, 0.1 + 0.5 * temp); // Ognisty pomarańcz
+                    return color(1.0, 0.3 + 0.7 * temp, 0.1 + 0.5 * temp); // Ognisty pomarańczowy
                 }
             }
 
