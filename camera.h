@@ -26,9 +26,10 @@ inline double random_double() {
 
 class camera {
 public:
+    //wartosci bazowe, jak w konsoli przekaze sie null, to zczyta z tych tutaj
     double aspect_ratio = 16.0 / 9.0;
-    int image_width = 2400;
-    int samples_per_pixel = 100; //jakosc antyaliasingu, multisamplingu
+    int image_width = 400;
+    int samples_per_pixel = 1; //jakosc antyaliasingu, multisamplingu / dla testow ustawic 1
 
     point3 lookfrom = point3(0, 1.0, 4.0); // Kamera wyżej i dalej
     point3 lookat = point3(0, 0, -3.0); // Patrzymy w środek czarnej dziury
