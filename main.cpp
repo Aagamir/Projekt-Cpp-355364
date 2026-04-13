@@ -26,25 +26,25 @@ int main() {
     std::cerr << "  (Wcisnij ENTER, aby uzyc domyslnych)\n";
     std::cerr << "========================================\n\n";
 
-    // --- USTAWIENIA RENDERU ---
+    //  USTAWIENIA RENDERU
     std::cerr << "--- RENDER ---\n";
     get_input("Szerokosc obrazu (px)", cam.image_width);
     get_input("Jakosc antialiasingu (probki)", cam.samples_per_pixel);
 
-    // --- USTAWIENIA FIZYKI ---
+    // USTAWIENIA FIZYKI
     std::cerr << "\n--- FIZYKA ---\n";
     get_input("Promien horyzontu zdarzen (Rs)", cam.event_horizon_radius);
     get_input("Wewnetrzny promien dysku", cam.disk_inner_radius);
     get_input("Zewnetrzny promien dysku", cam.disk_outer_radius);
 
-    // --- USTAWIENIA KAMERY ---
+    //  USTAWIENIA KAMERY
     std::cerr << "\n--- KAMERA ---\n";
     // Współrzędne wektora lookfrom (X, Y, Z)
     get_input("Pozycja kamery X", cam.lookfrom.e[0]);
     get_input("Pozycja kamery Y", cam.lookfrom.e[1]);
     get_input("Pozycja kamery Z", cam.lookfrom.e[2]);
 
-    // --- PLANETY TŁA ---
+    //  PLANETY TŁA
     std::cerr << "\n--- PLANETY --- \n";
     std::cerr << "Czy chcesz dodac planete w tle? (t/n) [n]: ";
     std::string add_p;
