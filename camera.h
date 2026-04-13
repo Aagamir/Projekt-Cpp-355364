@@ -36,7 +36,7 @@ public:
     vec3 vup = vec3(0, 1, 0); // "Góra" dla kamery to oś Y (czubek glowy)
     double focal_length = 2; // Normalna ogniskowa
 
-    // --- ZMIENNE WYCIĄGNIĘTE DLA INTERFEJSU UŻYTKOWNIKA ---
+    //  ZMIENNE WYCIĄGNIĘTE DLA INTERFEJSU UŻYTKOWNIKA
     point3 black_hole_center = point3(0.0, 0.0, -2.0);
     double event_horizon_radius = 0.1;
     double disk_inner_radius = 0.7; // Początek dysku (poza ISCO)
