@@ -1,9 +1,3 @@
-//Zobaczyc czemu dysk jest taki poszarpany
-//przywrocic funkcjonujaca siatke
-//zrobic instalator
-
-
-
 
 #include <iostream>
 #include <chrono>

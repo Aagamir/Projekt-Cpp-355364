@@ -1,8 +1,3 @@
-/*
- * 27.03.2026
- * Implementujemy fizyke za pomoca
- * ray marchingu polaczonego z calkowaniem numerycznym
-*/
 #ifndef RAY_H
 #define RAY_H
 
