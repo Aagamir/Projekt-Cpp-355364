@@ -76,7 +76,7 @@ Projekt nie posiada żadnych zewnętrznych zależności pakietowych oprócz naty
 * Biblioteka GLFW (możliwa do zainstalowania przez `brew install glfw`).
 
 ### Automatyczna Kompilacja (Zalecane):
-Najprostszą metodą uruchomienia projektu jest użycie komendy `make`. Wystarczy otworzyć terminal w głównym folderze projektu i wpisać:
+Najprostszą metodą uruchomienia projektu jest użycie komendy `make` (Wykorzystując plik Makefile). Wystarczy otworzyć terminal w głównym folderze projektu i wpisać:
 
 ```bash
 make run
