@@ -29,13 +29,15 @@ constant uint font[21] = {
     31140, 31716, 31183, 23213, 23186, 29351, 448, 1040, 31661, 11245, 31207
 };
 
-constant uint font_alpha[29] = {
+constant uint font_alpha[31] = {
     11245, 27566, 31015, 27502, 31207, 31140, 31087, 23533, 29847, 4719,
     23981, 18727, 24429, 31597, 31599, 31716, 31609, 31661, 31183, 29842,
     23407, 23378, 23421, 23213, 23186, 29351,
     0,
     1488,
-    448
+    448,
+    9362,
+    29671
 };
 
 constant int inst_l0[] = {19, 0, 1, 26, 19, 17, 24, 1};
@@ -43,6 +45,8 @@ constant int inst_l1[] = {18, 15, 2, 26, 5, 14, 19, 14, 13};
 constant int inst_l2[] = {17, 26, 17, 4, 18, 4, 19};
 constant int inst_l3[] = {15, 26, 15, 11, 0, 13, 4, 19, 0};
 constant int inst_l4[] = {27, 28, 26, 12, 0, 18, 0};
+constant int inst_l5[] = {29, 26, 18, 8, 0, 19, 10, 0};
+constant int inst_l6[] = {30, 26, 15, 11, 0, 13, 4, 19, 24};
 
 bool is_pixel_in_char(int char_code, int rx, int ry) {
     if (rx < 0 || rx > 2 || ry < 0 || ry > 4 || char_code < 0 || char_code > 20) return false;
@@ -93,7 +97,7 @@ float3 draw_hud(uint2 id, int fps, float3 cam_pos, float3 bh_pos, float3 screen_
     }
 
     int inst_x = 20, inst_y = 60, line_spacing = 8 * scale;
-    if (int(id.x) >= inst_x && int(id.x) < inst_x + 9 * 4 * scale && screen_y >= inst_y && screen_y < inst_y + 5 * line_spacing) {
+    if (int(id.x) >= inst_x && int(id.x) < inst_x + 9 * 4 * scale && screen_y >= inst_y && screen_y < inst_y + 7 * line_spacing) {
         int rel_x = (int(id.x) - inst_x) / scale, rel_y = (screen_y - inst_y) / scale;
         int line_idx = rel_y / 8, char_y = rel_y % 8;
 
@@ -106,6 +110,8 @@ float3 draw_hud(uint2 id, int fps, float3 cam_pos, float3 bh_pos, float3 screen_
                 else if (line_idx == 2 && char_idx < 7) c = inst_l2[char_idx];
                 else if (line_idx == 3 && char_idx < 9) c = inst_l3[char_idx];
                 else if (line_idx == 4 && char_idx < 7) c = inst_l4[char_idx];
+                else if (line_idx == 5 && char_idx < 8) c = inst_l5[char_idx];
+                else if (line_idx == 6 && char_idx < 9) c = inst_l6[char_idx];
 
                 if (c >= 0) {
                     uint bitmap = font_alpha[c];
